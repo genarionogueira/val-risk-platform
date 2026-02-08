@@ -148,7 +148,7 @@ This project is not attempting to be a full production rates/credit library. Out
 flowchart LR
   U[Users\nnotebooks, apps, batch] --> LB[Load balancer\nTraefik]
 
-  subgraph PricingTier[Pricing tier (horizontal scale)]
+  subgraph PricingTier["Pricing tier (horizontal scale)"]
     API1[Pricing API replica]
     API2[Pricing API replica]
     API3[Pricing API replica]
@@ -159,7 +159,7 @@ flowchart LR
   end
 
   subgraph MarketTier[Marketdata tier]
-    MQ[(Event stream / message queue\nRedis Streams in demo)]
+    MQ[("Event stream / message queue\nRedis Streams in demo")]
     MD[Marketdata service\nGraphQL query + subscription]
   end
 
@@ -193,7 +193,7 @@ The real-time demo shows a common enterprise pattern: **stream market changes**,
 ```mermaid
 %%{init: {'theme':'neutral'}}%%
 flowchart LR
-  MQ[(Event stream / queue)] --> MD[Marketdata\nsubscription]
+  MQ[("Event stream / queue")] --> MD[Marketdata\nsubscription]
   MD --> C[Python client]
   C --> NB[Jupyter notebook\nUI + workflow]
   C --> API[Pricing API\nGraphQL over HTTP]
