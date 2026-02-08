@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "marketdata"
+version = "0.1.0"
+description = "GraphQL service for curve data (query + subscription)"
+authors = ["Marketdata"]
+readme = "README.md"
+packages = [{ include = "app", from = "." }]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.115"
+strawberry-graphql = { extras = ["fastapi"], version = "^0.280" }
+uvicorn = { extras = ["standard"], version = "^0.32" }
+redis = ">=5.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

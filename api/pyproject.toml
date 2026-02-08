@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "pricing-api"
+version = "0.1.0"
+description = "FastAPI + Strawberry GraphQL Pricing API"
+authors = ["Pricing API"]
+readme = "README.md"
+packages = [{ include = "app", from = "." }]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pricing = { path = "../pricing-library", develop = true }
+fastapi = "^0.115"
+strawberry-graphql = { extras = ["fastapi"], version = "^0.280" }
+uvicorn = { extras = ["standard"], version = "^0.32" }
+pricing-client = {path = "../client", develop = true}
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0"
+httpx = "^0.28"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

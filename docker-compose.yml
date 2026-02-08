@@ -1,0 +1,96 @@
+# Replicas: deploy.replicas is applied with Docker Stack/Swarm. For plain
+# docker compose up, use: docker compose up --scale api-backend=3
+
+services:
+  api-backend:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    volumes:
+      - ./pricing-library:/app/pricing-library
+    environment:
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    deploy:
+      replicas: 3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api-backend.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.api-backend.entrypoints=web"
+      - "traefik.http.routers.api-backend.service=api-backend"
+      - "traefik.http.services.api-backend.loadbalancer.server.port=8000"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  marketdata:
+    build:
+      context: .
+      dockerfile: marketdata/Dockerfile
+    ports:
+      - "8001:8001"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.marketdata.rule=PathPrefix(`/marketdata`)"
+      - "traefik.http.routers.marketdata.entrypoints=web"
+      - "traefik.http.routers.marketdata.service=marketdata"
+      - "traefik.http.services.marketdata.loadbalancer.server.port=8001"
+      # Strip /marketdata so app sees /graphql, /health
+      - "traefik.http.middlewares.marketdata-stripprefix.stripprefix.prefixes=/marketdata"
+      - "traefik.http.routers.marketdata.middlewares=marketdata-stripprefix"
+
+  api:
+    image: traefik:v2.10
+    container_name: pricing-api
+    command:
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:8000"
+    ports:
+      - "8000:8000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      api-backend:
+        condition: service_healthy
+      marketdata:
+        condition: service_healthy
+
+  jupyter:
+    build:
+      context: .
+      dockerfile: jupyter/Dockerfile
+    container_name: pricing-jupyter
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./client:/home/jovyan/client
+    depends_on:
+      api:
+        condition: service_started
+      marketdata:
+        condition: service_healthy

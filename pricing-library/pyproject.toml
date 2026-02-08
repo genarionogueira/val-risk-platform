@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "pricing"
+version = "0.1.0"
+description = "Pricing library: curves, market, products, and risk (PV01, FX delta)."
+authors = ["Pricing Library"]
+readme = "README.md"
+packages = [{ include = "pricing" }]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "pricing-client"
+version = "0.1.0"
+description = "Python client for the Pricing GraphQL API (sgqlc)"
+authors = ["Pricing Client"]
+readme = "README.md"
+packages = [{ include = "pricing_client", from = "." }]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+sgqlc = "^16.0"
+websockets = "^12.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0"
+
+[tool.poetry.group.jupyter.dependencies]
+ipywidgets = "^8.0"
+pandas = "^2.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

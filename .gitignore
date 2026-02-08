@@ -1,0 +1,31 @@
+# Virtual environments
+.venv
+venv
+env
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info
+.eggs
+dist
+build
+
+# Testing and coverage
+.pytest_cache
+.coverage
+htmlcov
+.tox
+.mypy_cache
+
+# IDE and OS
+.idea
+.vscode
+*.swp
+.DS_Store
+
+# Poetry (per-component lock files are kept in pricing-library, api, client)
+# poetry.lock at root is removed after refactor
